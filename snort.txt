@@ -1,0 +1,35 @@
+use ubuntu as VM
+
+apt install snort
+
+sed -i 's/^include $RULE_PATH/#include $RULE_PATH/' /etc/snort/snort.conf
+
+vim /etc/snort/snort.conf
+
+uncomment include $RULE_PATH local.rule
+
+IDS : alert , log , pass
+IPS : drop , reject , sdrop
+
+this is format :
+
+  alert            ip       any       any ->     any        any       (msg:"ip alert"; sid:100001; rev:1; )
+(snort rule)   (protocol) (src ip) (src port)  (dst ip)  (dst port)       (message)
+
+vim /etc/snort/rules/local.rules
+
+alert ip any any -> any any (msg:"ip alert"; sid:100001; rev:1; )
+
+alert icmp any any -> $HOME_NET any (msg:"icmp alert "; sid:100002 ; rev:1; )
+
+allow ip any any -> 192.168.144.1-100 any (msg:"ip allow" ; sid :100003 ; rev:1;  content:"ssh" )
+
+
+
+# test
+# snort -T -i ens33 -c /etc/snort/snort.conf
+
+
+
+# console
+# snort -A console -q -i ens33 -c /etc/snort/snort.conf
